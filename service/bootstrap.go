@@ -3,17 +3,17 @@ package service
 import (
 	"net/http"
 
-	"github.com/HPISTechnologies/component-lib/actor"
-	"github.com/HPISTechnologies/component-lib/aggregator"
-	mworkers "github.com/HPISTechnologies/component-lib/intl/module/workers"
-	"github.com/HPISTechnologies/component-lib/storage"
-	"github.com/HPISTechnologies/component-lib/streamer"
-	"github.com/HPISTechnologies/eshing-svc/service/workers"
+	"github.com/arcology/component-lib/actor"
+	"github.com/arcology/component-lib/aggregator"
+	mworkers "github.com/arcology/component-lib/intl/module/workers"
+	"github.com/arcology/component-lib/storage"
+	"github.com/arcology/component-lib/streamer"
+	"github.com/arcology/eshing-svc/service/workers"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 
 	//"github.com/sirupsen/logrus"
-	"github.com/HPISTechnologies/component-lib/kafka"
+	"github.com/arcology/component-lib/kafka"
 )
 
 type Config struct {

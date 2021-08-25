@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	tmCli "github.com/HPISTechnologies/3rd-party/tm/cli"
-	"github.com/HPISTechnologies/eshing-svc/service"
+	tmCli "github.com/arcology/3rd-party/tm/cli"
+	"github.com/arcology/eshing-svc/service"
 )
 
 func main() {
