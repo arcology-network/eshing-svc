@@ -1,0 +1,8 @@
+{
+  "createNewDB":  "1",
+  "dbPath": "/home/monaco-s9/wei/shard-1.json",
+  "bufferMaxKeyLength": "0",
+  "merkleBufferSize": "36000000",
+  "msgToScreen": "0",
+  "msgToFile": "0"
+}

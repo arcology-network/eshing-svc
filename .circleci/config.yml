@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version
+      - image: cimg/go:1.15.8
+
+    steps:
+      - checkout
+      - run: sudo apt update
+      - run: sudo apt install libboost-all-dev
+      - run: sudo apt install libtbb-dev
+      - run: sudo apt install libleveldb-dev
+      - run: sudo apt install libcrypto++6
+      - run: go env -w GOPRIVATE=github.com/HPISTechnologies
+      - run: bash .circleci/download_artifacts.sh
+      - run: cp -f ./libeshing.so ./lib/libeshing.so
+      - run: go build
+      # - run: export LD_LIBRARY_PATH=/go/src/github.com/HPISTechnologies/scheduling-svc/lib && go test -tags 'nosproc nometri' -v ./... -coverprofile=coverage.txt -covermode=atomic
+      # - run: bash <(curl -s https://codecov.io/bash) -t 29cd9891-2fd1-4080-b2bd-96aab007cc98
+      - store_artifacts:
+          path: eshing-svc
