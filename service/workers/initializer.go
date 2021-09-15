@@ -1,8 +1,8 @@
 package workers
 
 import (
-	"github.com/arcology/component-lib/actor"
-	"github.com/arcology/component-lib/log"
+	"github.com/arcology-network/component-lib/actor"
+	"github.com/arcology-network/component-lib/log"
 	"go.uber.org/zap"
 )
 

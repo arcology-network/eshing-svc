@@ -3,17 +3,17 @@ package service
 import (
 	"net/http"
 
-	"github.com/arcology/component-lib/actor"
-	"github.com/arcology/component-lib/aggregator"
-	mworkers "github.com/arcology/component-lib/intl/module/workers"
-	"github.com/arcology/component-lib/storage"
-	"github.com/arcology/component-lib/streamer"
-	"github.com/arcology/eshing-svc/service/workers"
+	"github.com/arcology-network/component-lib/actor"
+	"github.com/arcology-network/component-lib/aggregator"
+	mworkers "github.com/arcology-network/component-lib/intl/module/workers"
+	"github.com/arcology-network/component-lib/storage"
+	"github.com/arcology-network/component-lib/streamer"
+	"github.com/arcology-network/eshing-svc/service/workers"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 
 	//"github.com/sirupsen/logrus"
-	"github.com/arcology/component-lib/kafka"
+	"github.com/arcology-network/component-lib/kafka"
 )
 
 type Config struct {
@@ -54,6 +54,7 @@ func (cfg *Config) Start() {
 		actor.MsgInitExecuted,
 		actor.MsgInclusive,
 		actor.MsgAppHash,
+		actor.MsgBlockCompleted,
 	}
 
 	receiveTopics := []string{
@@ -68,7 +69,7 @@ func (cfg *Config) Start() {
 		broker,
 		[]string{actor.MsgStartSub},
 		receiveMseeages,
-		[]int{1, 1, 1},
+		[]int{1, 1, 1, 1},
 		kafka.NewKafkaDownloader(cfg.concurrency, cfg.groupid, receiveTopics, receiveMseeages, viper.GetString("mqaddr")),
 	)
 	kafkaDownloader.Connect(streamer.NewDisjunctions(kafkaDownloader, 5))
@@ -90,13 +91,16 @@ func (cfg *Config) Start() {
 		broker,
 		[]string{
 			actor.MsgExecuted,
+			actor.MsgBlockCompleted,
+			actor.MsgEuResults,
 		},
 		[]string{
 			actor.MsgAcctHash,
 			actor.MsgInitParentInfo,
 			actor.MsgClearCompletedEuresults,
+			actor.MsgGc,
 		},
-		[]int{1, 1, 1},
+		[]int{1, 1, 1, 1},
 		workers.NewHpmtWorker(cfg.concurrency, cfg.groupid),
 	)
 	hpmtWorker.Connect(streamer.NewDisjunctions(hpmtWorker, 1))
@@ -159,6 +163,7 @@ func (cfg *Config) Start() {
 	relations := map[string]string{}
 	relations[actor.MsgAcctHash] = viper.GetString("msgexch")
 	relations[actor.MsgInitParentInfo] = viper.GetString("msgexch")
+	relations[actor.MsgGc] = viper.GetString("msgexch")
 
 	//05 kafkaUploader
 	kafkaUploader := actor.NewActor(
@@ -166,6 +171,7 @@ func (cfg *Config) Start() {
 		broker,
 		[]string{
 			actor.MsgAcctHash,
+			actor.MsgGc,
 			actor.MsgInitParentInfo,
 		},
 		[]string{},
