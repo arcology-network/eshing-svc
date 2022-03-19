@@ -24,5 +24,6 @@ func (i *Initializer) OnStart() {
 func (i *Initializer) OnMessageArrived(msgs []*actor.Message) error {
 	i.AddLog(log.LogLevel_Info, "start initialize ", zap.String("send command", actor.MsgStartSub))
 	i.MsgBroker.Send(actor.MsgStartSub, "")
+	i.MsgBroker.Send(actor.MsgBlockCompleted, actor.MsgBlockCompleted_Success)
 	return nil
 }

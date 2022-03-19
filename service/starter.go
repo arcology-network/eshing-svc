@@ -1,8 +1,12 @@
 package service
 
 import (
+	"net/http"
+
 	tmCommon "github.com/arcology-network/3rd-party/tm/common"
+	"github.com/arcology-network/component-lib/kafka"
 	"github.com/arcology-network/component-lib/log"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -10,7 +14,7 @@ import (
 var StartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start eshing service Daemon",
-	RunE:  startCmd,
+	RunE:  startCmdV2,
 }
 
 func init() {
@@ -44,10 +48,22 @@ func init() {
 	flags.String("nname", "node1", "node name in cluster")
 }
 
-func startCmd(cmd *cobra.Command, args []string) error {
+func startCmdV2(cmd *cobra.Command, args []string) error {
 	log.InitLog("eshing.log", viper.GetString("logcfg"), "eshing", viper.GetString("nname"), viper.GetInt("nidx"))
+	http.Handle("/metrics", promhttp.Handler())
+	go http.ListenAndServe(":19004", nil)
 
-	en := NewConfig()
+	en := NewConfigV2(
+		viper.GetInt("concurrency"),
+		viper.GetString("msgexch"),
+		viper.GetString("genesis-apc"),
+		viper.GetString("inclusive-txs"),
+		viper.GetString("euresults"),
+		viper.GetString("mqaddr"),
+		viper.GetString("mqaddr2"),
+		kafka.NewKafkaDownloader,
+		kafka.NewKafkaUploader,
+	)
 	en.Start()
 
 	// Wait forever
